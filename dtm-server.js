@@ -1,7 +1,7 @@
 
 
 var PORT = 8080;
-var DATA_PATH = "/Users/alan/dev/DTM-SRTM/global";
+var DATA_PATH = "/data";
 
 var GlobalDTM = require("./globalDtm");
 var dtm = new GlobalDTM(DATA_PATH);
@@ -27,5 +27,8 @@ app.get('/test', function(req, res){
 app.listen(PORT, function(){
     console.log("DTM-SERVER listening on port " + PORT);
 });
+
+
+//docker run --publish-all -v /Users/alan/dev/DTM-SRTM/:/data -ti amacleod/orbnodejs:v2 /bin/bash
 
 
