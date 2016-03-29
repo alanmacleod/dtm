@@ -1,7 +1,10 @@
 
 
 var PORT = 8080;
-var DATA_PATH = "/data/global";
+//var DATA_PATH = "/data/global";   // <--- PUBLISH
+var DATA_PATH = "/Users/alan/dev/DTM-SRTM/global";     // <--- DEV
+
+var M_TO_F = 3.28084;
 
 var GlobalDTM = require("./globalDtm");
 var dtm = new GlobalDTM(DATA_PATH);
@@ -47,6 +50,8 @@ if (getopt.options.install)
     process.exit(0);
 }
 
+
+
 app.get('/test', function(req, res){
 
     console.log("Executing server test");
@@ -60,6 +65,16 @@ app.get('/test', function(req, res){
 
 });
 
+//TODO: Error handling/checking
+app.get("/:lat/:lng", function(req, res) {
+
+    var metres = dtm.GetHeight(Number(req.params.lat), Number(req.params.lng));
+    res.send({
+        metres: metres,
+        feet: metres * M_TO_F
+    });
+
+});
 
 app.listen(PORT, function(){
     console.log("DTM-SERVER listening on port " + PORT);
