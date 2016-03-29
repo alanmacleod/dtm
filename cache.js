@@ -35,14 +35,14 @@ function CacheDTM(size)
             that._loadIntoCache(that.cacheData[s]);   // load the complete file
             return s;
         }
-    }
+    };
 
     this.readEntry = function (cacheSlot, x,y)
     {
         var offset  = y * (1201 * 2) + (x * 2);
         var num = that.cacheData[cacheSlot].data.readInt16BE(offset);
         return num;
-    }
+    };
 
     this._loadIntoCache = function (slot)
     {
@@ -62,7 +62,7 @@ function CacheDTM(size)
         slot.data = new Buffer(sizeBytes);
         var bytesRead = fs.readSync(fd, slot.data, 0, sizeBytes, 0);
         fs.closeSync(fd);
-    }
+    };
 
 
     this._getFreeSlot = function ()
@@ -94,7 +94,7 @@ function CacheDTM(size)
         that.cacheData.splice(slot, 1);
 
         return that.cacheData.length;
-    }
+    };
 
 
     this._exists = function(file)
@@ -109,7 +109,7 @@ function CacheDTM(size)
 
         return -1;
 
-    }
+    };
 }
 
 

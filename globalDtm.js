@@ -202,6 +202,8 @@ function GlobalDtm(dataPath)
         var heightD = that._cacheManager.readEntry(cacheHandle, x + 1, adjY - 1);
 
 
+        // Bilinear filtering (smooth samples)
+        //
         var weighted = (heightA * uOpposite + heightB * uRatio) * vOpposite + (heightC * uOpposite + heightD * uRatio) * vRatio;
 /*
         if  (heightA > 100 || heightB > 100 || heightC > 100 || heightD > 100)
