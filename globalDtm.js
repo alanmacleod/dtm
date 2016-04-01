@@ -217,7 +217,8 @@ function GlobalDtm(dataPath)
         return weighted;
 
 
-    }
+    };
+
 
     this._getCellFilename = function(lat, lon)
     {

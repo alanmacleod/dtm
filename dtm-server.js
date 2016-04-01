@@ -1,8 +1,8 @@
 
 
 var PORT = 8080;
-//var DATA_PATH = "/data/global";   // <--- PUBLISH
-var DATA_PATH = "/Users/alan/dev/DTM-SRTM/global";     // <--- DEV
+var DATA_PATH = "/data";   // <--- PUBLISH
+//var DATA_PATH = "/Users/alan/dev/DTM-SRTM/global2";     // <--- DEV
 
 var M_TO_F = 3.28084;
 
@@ -14,6 +14,11 @@ var bbox_list = require('./global-bbox.json');
 var app = express();
 
 var GetOpt = require('node-getopt');
+var Installer = require('./install');
+
+var installer = new Installer(DATA_PATH);
+
+var SILENT_MODE = false;
 
 var getopt = new GetOpt([
 
@@ -38,16 +43,24 @@ if (getopt.options.help)
 
 if (getopt.options.list)
 {
-    for (var t=0; t<bbox_list.length; t++)
-        console.log(bbox_list[t].country);
+    installer.printOptions();
     process.exit(0);
 }
 
 //FIXME: Not handling this correctly, probs need to iterate options for the correct argv or something
 if (getopt.options.install)
 {
-    console.log("Installing '"+getopt.argv[0]+"'...");
-    process.exit(0);
+    SILENT_MODE = true; // supress server notification to stdout
+
+    installer.install(getopt.argv[0], function(error){
+        if (error) {
+            console.log(error);
+        }else {
+            console.log("Finished.");
+        }
+
+        process.exit(0); // could just leave the process running here, server is ready to receive requests...
+    });
 }
 
 
@@ -76,11 +89,15 @@ app.get("/:lat/:lng", function(req, res) {
 
 });
 
+
+//TODO: Add a 'batch' method to accept an array of latlng pairs and return their elevation
+
+
 app.listen(PORT, function(){
-    console.log("DTM-SERVER listening on port " + PORT);
+    if (!SILENT_MODE) console.log("DTM-SERVER listening on port " + PORT);
 });
 
 
-//docker run --publish-all -v /Users/alan/dev/DTM-SRTM/:/data -ti amacleod/orbnodejs:v2 /bin/bash
-
-
+//docker run -p 8080:8080 -v /Users/alan/dev/DTM-SRTM/:/data -ti amacleod/orbdtm /bin/bash
+//docker run -p 8080:8080 -v /Users/alan/dev/DTM-SRTM/:/data -t amacleod/orbdtm node /var/dtm-server/dtm-server -i unitedkingdom
+// docker run -t amacleod/orbdtm node /var/dtm-server/dtm-server --help
