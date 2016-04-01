@@ -10,7 +10,7 @@ var bboxList = require('./global-bbox.json');
 var httpreq = require('httpreq');
 var async  = require('async');
 var fs = require("fs");
-
+var admzip = require('adm-zip');
 
 
 // NOTE: this installer only works for "Eurasia" region for now
@@ -44,7 +44,7 @@ function installer(dataPath)
             return;
         }
 
-        console.log("Installing elevation data for '"+country+"'...");
+        console.log("\nInstalling elevation data for '"+country+"'...\n");
 
         var files = this._generateFileList(bbox);
 
@@ -72,10 +72,22 @@ function installer(dataPath)
                         if (res.statusCode >= 200 && res.statusCode < 400)
                         {
                              fs.writeFile(writePath, res.body, function (err) {
-                                 process.stdout.write("OK\r\n");
+
                                 if(err) {
                                     console.log("Error writing file!");
                                     console.log(err);
+                                } else {
+                                    process.stdout.write("UNZIP...");
+
+                                    // now unzip
+                                    var zip = new admzip(writePath);
+                                    zip.extractAllTo(installPath+"/", true);
+
+                                    // delete the zip
+                                    fs.unlink(writePath);
+
+                                    process.stdout.write("OK\r\n");
+
                                 }
                                  callback();
                             });
