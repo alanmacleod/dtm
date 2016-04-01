@@ -1,7 +1,13 @@
 # dtm
-NodeJS project to lookup SRTM elevation data files (.HGT) directly from disk using a latlng pair and linearly interpolate the result. Also provides an intelligent memory cache for batched requests. 
+NodeJS project to lookup SRTM elevation data files (.HGT) directly from disk using a latlng pair and linearly interpolate the result. Also provides an intelligent memory cache for batched requests.
 
-Provides a variety of useful functions (arbitrary dtm mesh patches etc), key method is "GetHeight(lat, lng)".
+Also includes the ability to 'install' data by country, try running
+
+node dtm-server --help
+
+for more info.
+
+Check src for web methods. Provides a variety of useful functions (arbitrary dtm mesh patches etc), key method is "GetHeight(lat, lng)".
 
 Example usage:
 
