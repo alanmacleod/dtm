@@ -25,7 +25,7 @@ function installer(dataPath)
 {
     installPath = dataPath;
 
-    this.install = function(country, cb)
+    this.install = function(country, overwrite, cb)
     {
         var cc = country.toLowerCase().replace(/ /g, '');
         var bbox = null;
@@ -48,25 +48,39 @@ function installer(dataPath)
 
         var files = this._generateFileList(bbox);
 
-        this._downloadData(files, cb);
+        this._downloadData(files, overwrite, cb);
 
 
     };
 
-    this._downloadData = function(files, final_cb)
+    this._downloadData = function(files, overwrite, final_cb)
     {
         async.eachSeries(files,
             function(item, callback)
             {
-                var url = srtm_urls[0] + item;
-                var writePath = installPath+"/"+item;
+                var url = srtm_urls[0] + item.zipfile;
+                var writePath = installPath+"/"+item.zipfile;
+                var writePathFinal = installPath + "/" + item.file;
 
+                process.stdout.write("'"+item.zipfile+"'...");
 
-                process.stdout.write("'"+item+"'...");
+                if (fs.existsSync(writePathFinal))
+                {
+                    if (overwrite)
+                    {
+                        process.stdout.write("[OVERWRITING]...");
+
+                    } else {
+                        process.stdout.write("[EXISTS]\r\n");
+                        callback();
+                        return;
+                    }
+                }
 
                 httpreq.get(url, {binary: true}, function (err, res){
                     if (err){
                         console.log(err);
+                        callback();
                     }else{
 
                         if (res.statusCode >= 200 && res.statusCode < 400)
@@ -131,7 +145,8 @@ function installer(dataPath)
             for (var lng = llng; lng <= ulng; lng++)
             {
                 //console.log(lat, lng);
-                fileList.push(dtm._getCellFilename(lat, lng) +".hgt.zip");
+                var file = dtm._getCellFilename(lat, lng) +".hgt";
+                fileList.push({zipfile: file+".zip", file:file});
             }
         }
         return fileList;

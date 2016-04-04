@@ -1,8 +1,8 @@
 
 
 var PORT = 8080;
-var DATA_PATH = "/data";   // <--- PUBLISH
-//var DATA_PATH = "/Users/alan/dev/DTM-SRTM/global2";     // <--- DEV
+//var DATA_PATH = "/data";   // <--- PUBLISH
+var DATA_PATH = "/Users/alan/dev/DTM-SRTM/global2";     // <--- DEV
 
 var M_TO_F = 3.28084;
 
@@ -24,6 +24,7 @@ var getopt = new GetOpt([
 
     ['l', 'list', 'List available DTM countries to install'],
     ['i', 'install [country]', 'Install the given country'],
+    ['o', 'overwrite', 'Overwrite any files during installation'],
     ['h', 'help', 'Show help']
 
 ]).bindHelp().parseSystem();
@@ -47,12 +48,17 @@ if (getopt.options.list)
     process.exit(0);
 }
 
+
+
 //FIXME: Not handling this correctly, probs need to iterate options for the correct argv or something
 if (getopt.options.install)
 {
     SILENT_MODE = true; // supress server notification to stdout
+    var overwrite = false;
 
-    installer.install(getopt.argv[0], function(error){
+    if (getopt.options.overwrite) overwrite = true;
+
+    installer.install(getopt.argv[0], overwrite, function(error){
         if (error) {
             console.log(error);
         }else {
@@ -63,6 +69,10 @@ if (getopt.options.install)
     });
 }
 
+if (getopt.options.overwrite && !getopt.options.install)
+{
+    console.log("Overwrite option ignored (no installation requested)");
+}
 
 
 app.get('/test', function(req, res){
